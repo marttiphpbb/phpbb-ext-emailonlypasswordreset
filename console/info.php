@@ -19,7 +19,6 @@ use phpbb\db\driver\factory as db;
 
 class info extends command
 {
-	/** @var db */
 	protected $db;
 
 	public function __construct(user $user, db $db)

@@ -15,19 +15,10 @@ use phpbb\language\language;
 
 class listener implements EventSubscriberInterface
 {
-	/** @var db */
 	protected $db;
-
-	/** @var language */
 	protected $language;
-
-	/** @var template */
 	protected $template;
-
-	/** @var string */
 	protected $phpbb_root_path;
-
-	/** @var string */
 	protected $php_ext;
 
 	public function __construct(
@@ -58,7 +49,7 @@ class listener implements EventSubscriberInterface
 	public function core_page_footer_after(event $event)
 	{
 		$tpl_vars = $this->template->retrieve_vars([
-			'S_IN_UCP', 
+			'S_IN_UCP',
 			'S_PROFILE_ACTION',
 		]);
 
@@ -79,7 +70,7 @@ class listener implements EventSubscriberInterface
 	{
 		$sql_array = $event['sql_array'];
 		$email = $event['email'];
-		
+
 		$sql_array['WHERE'] = 'user_email_hash = \'';
 		$sql_array['WHERE'] .= $this->db->sql_escape(phpbb_email_hash($email));
 		$sql_array['WHERE'] .= '\'';
@@ -88,7 +79,7 @@ class listener implements EventSubscriberInterface
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
-		
+
 		while($this->db->sql_fetchrow($result))
 		{
 			$count++;
@@ -100,17 +91,17 @@ class listener implements EventSubscriberInterface
 			$this->language->add_lang('error', 'marttiphpbb/emailonlypasswordreset');
 			trigger_error('MARTTIPHPBB_EMAILONLYPASSWORDRESET_NO_EMAIL_ERROR');
 		}
-		
+
 		if ($count > 1)
 		{
 			$this->language->add_lang('error', 'marttiphpbb/emailonlypasswordreset');
 			$err = $this->language->lang('MARTTIPHPBB_EMAILONLYPASSWORDRESET_DUPLICATE_EMAIL_ERROR');
 			$err = vsprintf($err, [
-				$email, 
-				'<a href="' . append_sid($this->phpbb_root_path . 'memberlist.' . $this->php_ext, 'mode=contactadmin') . '">', 
+				$email,
+				'<a href="' . append_sid($this->phpbb_root_path . 'memberlist.' . $this->php_ext, 'mode=contactadmin') . '">',
 				'</a>',
-			]);	
-			trigger_error($err);	
+			]);
+			trigger_error($err);
 		}
 
 		$event['sql_array'] = $sql_array;
